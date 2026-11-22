@@ -23,7 +23,7 @@ jobs:
 
       - name: Install launcher deps
         working-directory: launcher
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Point update-config at this repo
         working-directory: launcher
