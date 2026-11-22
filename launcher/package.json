@@ -1,0 +1,48 @@
+{
+  "name": "projectx-funpay",
+  "version": "0.7.6",
+  "description": "ProjectX: лаунчер бота для FunPay",
+  "author": "Alex",
+  "private": true,
+  "main": "src/boot.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/core.test.js test/features.test.js test/notify.test.js",
+    "check": "node --check src/main.js && node --check src/bot.js && node --check src/cardinal-data.js && node --check src/renderer.js && node --check src/preferences.js && node --check src/updater.js",
+    "obfuscate": "node scripts/obfuscate.js",
+    "build": "electron-builder --win portable --x64",
+    "release": "node ../build/make-release.js"
+  },
+  "devDependencies": {
+    "electron": "45.0.0",
+    "electron-builder": "^26.18.0",
+    "javascript-obfuscator": "^4.1.1",
+    "resedit": "^2.0.3"
+  },
+  "build": {
+    "appId": "dev.projectx.funpay",
+    "productName": "ProjectX FunPay",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "assets/icon.ico",
+      "package.json"
+    ],
+    "win": {
+      "target": "portable",
+      "icon": "assets/icon.ico",
+      "signExecutable": false,
+      "signAndEditExecutable": false
+    },
+    "artifactName": "ProjectX-FunPay.${ext}",
+    "afterPack": "scripts/set-icon.js",
+    "extraResources": [
+      {
+        "from": "extension",
+        "to": "extension"
+      }
+    ]
+  }
+}

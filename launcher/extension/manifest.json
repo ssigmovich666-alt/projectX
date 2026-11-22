@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name": "ProjectX",
+  "version": "0.3.1",
+  "description": "Фоны, темы и инструменты продавца для FunPay.",
+  "permissions": [
+    "storage"
+  ],
+  "icons": {
+    "64": "assets/projectx-icon.png"
+  },
+  "action": {
+    "default_title": "Открыть настройки ProjectX",
+    "default_icon": "assets/projectx-icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://funpay.com/*",
+        "https://support.funpay.com/*"
+      ],
+      "css": [
+        "chat.css"
+      ],
+      "js": [
+        "chat.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://support.funpay.com/*"
+      ],
+      "js": [
+        "support.js"
+      ],
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "https://funpay.com/*"
+      ],
+      "css": [
+        "tools.css"
+      ],
+      "js": [
+        "tools.js"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "backgrounds/*.jpg",
+        "assets/projectx-icon.png",
+        "assets/noto-sans-semibold.ttf",
+        "commands.json"
+      ],
+      "matches": [
+        "https://funpay.com/*",
+        "https://support.funpay.com/*"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,757 @@
+.projectx-replaced-nav-item {
+  display: none !important;
+}
+
+html[data-projectx-themed] {
+  --projectx-tint: color-mix(in srgb, var(--projectx-raised) 92%, var(--projectx-accent));
+  --projectx-panel: color-mix(in srgb, var(--projectx-tint) 76%, transparent);
+  --projectx-border: color-mix(in srgb, var(--projectx-accent) 26%, transparent);
+  --projectx-hover: color-mix(in srgb, var(--projectx-accent) 14%, transparent);
+  --projectx-text: #f4f4f6;
+  --projectx-muted: #c5cad5;
+  --projectx-link: color-mix(in srgb, var(--projectx-accent) 49%, white);
+  --projectx-thumb: color-mix(in srgb, var(--projectx-accent) 57%, var(--projectx-raised));
+  background-color: var(--projectx-base);
+  accent-color: var(--projectx-accent);
+  color-scheme: dark;
+  scrollbar-color: var(--projectx-thumb) var(--projectx-base);
+}
+
+html[data-projectx-themed] body {
+  background: transparent !important;
+  color: var(--projectx-text);
+}
+
+html[data-projectx-wallpaper] {
+  background-image: linear-gradient(180deg, rgb(8 10 15 / 16%), rgb(8 10 15 / 37%)),
+    var(--projectx-wallpaper) !important;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+html[data-projectx-themed] #header {
+  background-color: color-mix(in srgb, var(--projectx-base) 88%, transparent) !important;
+  border-radius: 0 0 14px 14px;
+}
+
+html[data-projectx-themed] #header .navbar {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+html[data-projectx-themed] #header .navbar-brand {
+  filter: brightness(0) invert(1);
+}
+
+html[data-projectx-themed] #header .navbar-nav > li > a {
+  position: relative;
+  isolation: isolate;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] #header .navbar-nav > li > a :is(.badge, .label, .counter, .nav-counter) {
+  background-color: color-mix(in srgb, var(--projectx-tint) 70%, var(--projectx-accent)) !important;
+  color: var(--projectx-link);
+  box-shadow: inset 0 0 0 1px var(--projectx-border);
+}
+
+html[data-projectx-themed] #header .navbar-nav > li > a:is(:hover, :focus),
+html[data-projectx-themed] #header .navbar-nav > :is(.active, .open) > a,
+html[data-projectx-themed] #header .navbar-nav > li > a[aria-current="page"] {
+  background-color: transparent;
+  color: #fff;
+}
+
+html[data-projectx-themed] #header .navbar-nav > :is(.active, .open) {
+  background-color: transparent;
+}
+
+html[data-projectx-themed] #header .navbar-nav > li > a:is(:hover, :focus-visible, [aria-current="page"])::before,
+html[data-projectx-themed] #header .navbar-nav > :is(.active, .open) > a::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset-inline: 2px;
+  inset-block-start: 50%;
+  block-size: 1.8em;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background-color: var(--projectx-hover);
+  pointer-events: none;
+}
+
+html[data-projectx-themed] #header .navbar-nav > li > a:focus-visible {
+  outline: none;
+}
+
+html[data-projectx-themed] #header .navbar-nav > li > a:focus-visible::before {
+  outline: 2px solid var(--projectx-accent);
+  outline-offset: 1px;
+}
+
+html[data-projectx-themed] #header .promo-games-filter {
+  background-color: var(--projectx-tint);
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--projectx-border);
+}
+
+html[data-projectx-themed] #header .promo-games-filter:focus-within {
+  box-shadow: inset 0 0 0 1px var(--projectx-accent);
+}
+
+html[data-projectx-themed] #header .promo-games-filter .form-control,
+html[data-projectx-themed] #header .promo-games-filter > .btn {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] #header .promo-games-filter .form-control:focus {
+  outline: none;
+}
+
+html[data-projectx-themed] #header .promo-games-filter > .btn:focus-visible {
+  border-radius: 999px;
+  outline: 1px solid var(--projectx-accent);
+  outline-offset: -4px;
+}
+
+html[data-projectx-themed] #header .promo-games-filter .form-control::placeholder,
+html[data-projectx-themed] #content :is(input, textarea).form-control::placeholder {
+  color: var(--projectx-muted);
+  opacity: 1;
+}
+
+html[data-projectx-themed] :is(.wrapper, .wrapper-content, #content) {
+  background-color: transparent;
+}
+
+html[data-projectx-themed] #content .bg-light-color {
+  background-color: transparent !important;
+}
+
+html[data-projectx-themed] :is(#content:not(.content-chat) > .container, #content > .bg-light-color > .container, #content .showcase, #content .offer, #footer) {
+  background-color: var(--projectx-panel);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] :is(#content:not(.content-chat) > .container, #content > .bg-light-color > .container) {
+  border-radius: 12px;
+}
+
+html[data-projectx-themed] :is(#content, #footer) a:not(.btn, .label, .badge, .tc-item, .contact-item) {
+  color: var(--projectx-link);
+}
+
+html[data-projectx-themed] :is(.dropdown-menu, .modal-content, .popover, .select2-dropdown, #content :is(.panel, .panel-heading, .well, .list-group-item, .alert, [role="alert"])) {
+  background-color: var(--projectx-tint);
+  border-color: var(--projectx-border);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] .dropdown-menu li > a {
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] .dropdown-menu li > a:is(:hover, :focus) {
+  background-color: var(--projectx-hover);
+}
+
+html[data-projectx-themed] #header .dropdown-autocomplete {
+  inset-inline: 0;
+  inline-size: min(1120px, calc(100% - 24px));
+  max-block-size: min(65dvh, 36rem);
+  margin-inline: auto;
+  overflow: auto;
+  background-color: color-mix(in srgb, var(--projectx-tint) 96%, transparent);
+  border: 1px solid var(--projectx-border);
+  border-radius: 0 0 12px 12px;
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] #header .dropdown-autocomplete .promo-games > .container {
+  inline-size: 100%;
+}
+
+html[data-projectx-themed] :is(#header .dropdown-autocomplete, #content .promo-games) :is(.game-title, .game-title a, .title-mini) {
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] #header .dropdown-autocomplete .promo-game-item li > a {
+  color: var(--projectx-link);
+}
+
+html[data-projectx-themed] :is(#content, #header .dropdown-autocomplete, .modal) :is(.form-control, .form-control-box, .input-group-addon, .btn-default, .btn-gray, .select2-selection) {
+  background-color: var(--projectx-tint);
+  border-color: var(--projectx-border);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] :is(#content, #header .dropdown-autocomplete, .modal) :is(.btn-default, .btn-gray, .form-control-box):is(:hover, :focus-visible) {
+  border-color: var(--projectx-accent);
+}
+
+html[data-projectx-themed] :is(.modal-header, .modal-footer, .nav-tabs, .list-group-item, #content .tc-item > div) {
+  border-color: var(--projectx-border);
+}
+
+html[data-projectx-themed] .modal .close {
+  color: var(--projectx-text);
+  text-shadow: none;
+}
+
+html[data-projectx-themed] :is(.nav-tabs, .nav-pills) > li > a,
+html[data-projectx-themed] .pagination > li > :is(a, span) {
+  background-color: var(--projectx-tint);
+  border-color: var(--projectx-border);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] :is(.nav-tabs, .nav-pills, .pagination) > .active > :is(a, span) {
+  background-color: color-mix(in srgb, var(--projectx-tint) 76%, var(--projectx-accent));
+  border-color: var(--projectx-accent);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] #content a.counter-item {
+  background-color: var(--projectx-tint);
+  color: var(--projectx-link);
+}
+
+html[data-projectx-themed] #content a.counter-item:is(.active, :hover, :focus-visible) {
+  background-color: color-mix(in srgb, var(--projectx-tint) 76%, var(--projectx-accent));
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] #content .promo-cd h1,
+html[data-projectx-themed] #content .promo-cd .block-info {
+  color: var(--projectx-text);
+  text-shadow: 0 1px 4px var(--projectx-base);
+}
+
+html[data-projectx-themed] #content :is(.page-header, .tc-header, .tc-item, .table > :is(thead, tbody) > tr > :is(th, td), .review-container, .review-item) {
+  border-color: var(--projectx-border);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] #content .review-item-answer {
+  background-color: var(--projectx-tint);
+  color: var(--projectx-text);
+  box-shadow: inset 0 0 0 1px var(--projectx-border);
+}
+
+html[data-projectx-themed] #content :is(.review-item, .order-review) :is(.title-mini, .review-item-detail, h5, h6) {
+  color: var(--projectx-muted);
+}
+
+html[data-projectx-themed] #content :is(.tc-header, .tc-item) {
+  background-color: transparent;
+}
+
+html[data-projectx-themed] #content :is(.tc-item:hover, .table-hover > tbody > tr:hover, .table-striped > tbody > tr:nth-of-type(odd)) {
+  background-color: var(--projectx-hover);
+}
+
+html[data-projectx-sales] #content .tc-item.info {
+  background-color: rgb(76 142 243 / 16%);
+}
+
+html[data-projectx-sales] #content .tc-item.warning {
+  background-color: rgb(242 199 76 / 16%);
+}
+
+html[data-projectx-sales] #content .tc-item:is(.info, .warning) > div {
+  background-color: transparent;
+}
+
+html[data-projectx-themed] #content :is(.text-muted, .help-block, .tc-date-time, .profile-container h5, .profile-header h5, .control-label, .param-item h5, .media-user-reviews) {
+  color: var(--projectx-muted);
+}
+
+html[data-projectx-themed] #content .tc-item :is(.media-user-name, .tc-desc-text, .tc-price) {
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] #content .text-success {
+  color: #a5e6b7;
+}
+
+html[data-projectx-themed] #content .text-danger {
+  color: #ffc3cb;
+}
+
+html[data-projectx-themed] .chat-full {
+  color: var(--projectx-text);
+  border: 1px solid var(--projectx-border);
+  border-radius: 12px;
+}
+
+html[data-projectx-themed] :is(#content .chat, .chat-full :is(.chat-contacts, .chat-detail, .js-chat-top)) {
+  background: var(--projectx-panel) !important;
+  border-color: var(--projectx-border);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] #content .chat :is(.chat-header, .chat-message-container, .chat-form) {
+  background-color: transparent;
+  border-color: var(--projectx-border);
+}
+
+html[data-projectx-themed] :is(.chat-full, #content .chat) :is(.contact-item, .chat-contact, .chat-msg-item) {
+  background-color: transparent;
+  border-color: var(--projectx-border);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] .chat-full :is(.contact-item, .chat-contact):is(:hover, :focus, .active, .selected) {
+  background-color: color-mix(in srgb, var(--projectx-accent) 17%, transparent);
+}
+
+html[data-projectx-themed] #content .chat-full .contact-item.unread {
+  background-color: rgb(245 207 80 / 22%);
+  box-shadow: inset 3px 0 #f5cf50;
+}
+
+html[data-projectx-themed] #content .chat-full .contact-item.unread:is(:hover, :focus-visible) {
+  background-color: rgb(245 207 80 / 30%);
+}
+
+html[data-projectx-themed] :is(.chat-full, #content .chat) :is(.media-user-name, .contact-name, .chat-msg-text, .chat-msg-author) {
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] :is(.chat-full, #content .chat) :is(.media-user-status, .contact-message, .contact-time, .contact-item-message, .contact-item-time, .chat-msg-date, .chat-empty, .text-muted) {
+  color: var(--projectx-muted);
+  opacity: 1;
+}
+
+html[data-projectx-themed] #content .online .media-user-status {
+  color: #93df76;
+}
+
+html[data-projectx-themed] #content :is(.chat, .chat-full) :is(.media-user-name, .chat-msg-author) > a:not(.btn) {
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] #content .chat-msg-item :is(.alert, [role="alert"]) {
+  background: var(--projectx-tint);
+  border-color: var(--projectx-border);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] #content .chat-msg-item :is(.alert, [role="alert"]) :is(.fa, .fas, .alert-icon) {
+  color: var(--projectx-link);
+}
+
+html[data-projectx-themed] :is(.chat-message-list, .chat-contacts, .chat-detail-list, .chat .custom-scroll) {
+  scrollbar-color: var(--projectx-thumb) transparent;
+}
+
+html[data-projectx-themed] #content .chat textarea {
+  background-color: rgb(13 15 21 / 62%) !important;
+  border-color: var(--projectx-border);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed] #content .chat textarea::placeholder {
+  color: var(--projectx-muted);
+}
+
+[data-projectx-support] .projectx-support-shortcut,
+[data-projectx-support] .navbar-right > .projectx-nav-item > a {
+  display: inline-flex;
+  align-items: center;
+  margin-inline: 6px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: inherit;
+}
+
+[data-projectx-support] .projectx-support-floating {
+  position: fixed;
+  z-index: 1000;
+  inset: 10px 10px auto auto;
+  background-color: var(--projectx-base);
+  color: #f4f4f6;
+}
+
+html[data-projectx-themed][data-projectx-support] {
+  --projectx-support-base: color-mix(in srgb, var(--projectx-base) 94%, transparent);
+  --projectx-support-tint: color-mix(in srgb, var(--projectx-tint) 82%, var(--projectx-accent));
+  --bs-body-color: var(--projectx-text);
+  --bs-emphasis-color: var(--projectx-text);
+  --bs-secondary-color: var(--projectx-muted);
+  --bs-tertiary-color: var(--projectx-muted);
+  --bs-body-bg: var(--projectx-base);
+  --bs-secondary-bg: var(--projectx-tint);
+  --bs-tertiary-bg: var(--projectx-tint);
+  --bs-primary-bg-subtle: var(--projectx-support-tint);
+  --bs-info-bg-subtle: var(--projectx-support-tint);
+  --bs-border-color: var(--projectx-border);
+  --bs-border-color-translucent: var(--projectx-border);
+  --bs-link-color: var(--projectx-link);
+}
+
+html[data-projectx-themed][data-projectx-support] :is(header:not(.projectx-titlebar), .navbar, main > .container, main > .container-fluid, .card, .ticket, .panel, .panel-heading, .list-group-item, .modal-content) {
+  background-color: var(--projectx-panel);
+  border-color: var(--projectx-border);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed][data-projectx-support] :is(.bg-white, .bg-body, [data-projectx-support-surface="base"]) {
+  background-color: var(--projectx-support-base) !important;
+  border-color: var(--projectx-border);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed][data-projectx-support] :is(.bg-light, .bg-body-secondary, .bg-body-tertiary, .bg-light-subtle, .btn-light, [data-projectx-support-surface="neutral"]) {
+  background-color: var(--projectx-tint) !important;
+  border-color: var(--projectx-border);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed][data-projectx-support] :is(.bg-primary-subtle, .bg-info-subtle, [data-projectx-support-surface="tint"]) {
+  background-color: var(--projectx-support-tint) !important;
+  border-color: var(--projectx-border);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed][data-projectx-support] :is(a, button, .list-group-item-action):is(.btn-light, [data-projectx-support-surface]):is(:hover, :focus-visible) {
+  background-color: var(--projectx-support-tint) !important;
+}
+
+html[data-projectx-themed][data-projectx-support] :is(.list-group-item-action, .dropdown-item):is(:hover, :focus-visible) {
+  background-color: var(--projectx-support-tint);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed][data-projectx-support] .alert :is(.bi, .fa, .fas, svg) {
+  color: var(--projectx-link);
+}
+
+html[data-projectx-themed][data-projectx-support] :is([data-projectx-support-ink], .breadcrumb-item.active) {
+  color: var(--projectx-text) !important;
+}
+
+html[data-projectx-themed][data-projectx-support] a[data-projectx-support-ink]:not(.btn) {
+  color: var(--projectx-link) !important;
+}
+
+html[data-projectx-themed][data-projectx-support] .breadcrumb-item + .breadcrumb-item::before {
+  color: var(--projectx-muted);
+}
+
+html[data-projectx-themed][data-projectx-support] select.form-select {
+  appearance: auto;
+  background-image: none;
+}
+
+html[data-projectx-themed][data-projectx-support] :is(.dropdown-menu, .popover, .alert, dialog:not(.projectx-settings), .table > :is(thead, tbody, tfoot) > tr > :is(th, td)) {
+  background-color: var(--projectx-tint);
+  border-color: var(--projectx-border);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed][data-projectx-support] :is(main, #content, .ticket, .card, .modal, form) a:not(.btn, .projectx-nav-button) {
+  color: var(--projectx-link);
+}
+
+html[data-projectx-themed][data-projectx-support] :is(header, .navbar) .projectx-nav-button {
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed][data-projectx-support] :is(form, .modal) :is(input:not([type="hidden"], [type="radio"], [type="checkbox"], [type="submit"], [type="button"], [type="reset"]), textarea, select, .form-control, .btn-default, .btn-secondary, .select2-selection, .dropzone) {
+  background-color: var(--projectx-tint);
+  border-color: var(--projectx-border);
+  color: var(--projectx-text);
+}
+
+html[data-projectx-themed][data-projectx-support] :is(form input, form textarea)::placeholder,
+html[data-projectx-themed][data-projectx-support] :is(.text-muted, .help-block, .form-text, .control-label) {
+  color: var(--projectx-muted);
+}
+
+.projectx-settings {
+  --projectx-shell: color-mix(in srgb, var(--projectx-base) 92%, var(--projectx-accent));
+  --projectx-heading: color-mix(in srgb, var(--projectx-raised) 87%, var(--projectx-accent));
+  --projectx-card: color-mix(in srgb, var(--projectx-raised) 92%, var(--projectx-accent));
+  --projectx-line: rgb(255 255 255 / 15%);
+  --projectx-label: #e7e7e8;
+  --projectx-muted: #aeb0b6;
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  width: min(1192px, calc(100vw - 28px));
+  height: min(660px, calc(100dvh - 28px));
+  min-width: min(390px, calc(100vw - 28px));
+  min-height: min(270px, calc(100dvh - 28px));
+  max-width: calc(100vw - 28px);
+  max-height: calc(100dvh - 28px);
+  margin: auto;
+  padding: 0 0 11px;
+  overflow: hidden;
+  resize: both;
+  background: transparent;
+  color: var(--projectx-label);
+  border: 0;
+  border-radius: 16px;
+  color-scheme: dark;
+  font: 600 15px/1.35 "ProjectX UI", "Segoe UI", sans-serif;
+}
+
+.projectx-settings[open] {
+  display: grid;
+  grid-template-rows: 48px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.projectx-settings:not([open]) {
+  display: none !important;
+}
+
+.projectx-settings.projectx-expanded {
+  width: calc(100vw - 28px) !important;
+  height: calc(100dvh - 28px) !important;
+  resize: none;
+}
+
+.projectx-settings::backdrop {
+  background: rgb(8 9 13 / 37%);
+}
+
+.projectx-settings::-webkit-resizer {
+  background: linear-gradient(135deg, transparent 52%, var(--projectx-accent) 53% 58%, transparent 59% 73%, var(--projectx-accent) 74% 80%, transparent 81%);
+}
+
+.projectx-settings [hidden] {
+  display: none !important;
+}
+
+.projectx-titlebar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  background: color-mix(in srgb, var(--projectx-shell) 88%, transparent);
+  border-radius: 16px;
+  user-select: none;
+}
+
+.projectx-titlebar img {
+  display: block;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.projectx-window-controls {
+  display: flex;
+  gap: 4px;
+  justify-self: end;
+}
+
+.projectx-settings button {
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.projectx-window-controls button {
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+}
+
+.projectx-settings-body {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: clamp(106px, 16%, 178px) minmax(0, 1fr);
+  gap: 10px;
+}
+
+.projectx-settings-nav,
+.projectx-workspace {
+  background: color-mix(in srgb, var(--projectx-shell) 85%, transparent);
+  border-radius: 14px;
+}
+
+.projectx-settings-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  overflow: auto;
+  padding: 14px 10px;
+}
+
+.projectx-settings-nav button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 0 9px;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: var(--projectx-muted);
+}
+
+.projectx-icon {
+  display: inline-block;
+  flex: none;
+  width: 13px;
+  height: 13px;
+  border: 1px solid currentColor;
+  position: relative;
+}
+
+.projectx-icon-landscape::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-inline-start: 1px solid currentColor;
+  border-block-start: 1px solid currentColor;
+  transform: rotate(45deg);
+  top: 4px;
+  left: 3px;
+}
+
+.projectx-icon-theme {
+  border-radius: 50%;
+  box-shadow: inset 4px 0 currentColor;
+}
+
+.projectx-workspace {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.projectx-section {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  margin: 0;
+}
+
+.projectx-section h2,
+.projectx-section h3 {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+}
+
+.projectx-section h2 {
+  margin: 2px 2px 0;
+  padding: 16px;
+  border-radius: 12px 12px 0 0;
+  border-bottom: 1px solid var(--projectx-line);
+  background: color-mix(in srgb, var(--projectx-heading) 69%, transparent);
+}
+
+.projectx-section h3 {
+  padding: 12px 3px 8px;
+  color: var(--projectx-muted);
+}
+
+.projectx-section-scroll {
+  overflow: auto;
+  scrollbar-color: var(--projectx-accent) transparent;
+  padding: 12px 15px;
+}
+
+.projectx-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 39px;
+  margin-bottom: 6px;
+  padding: 6px 10px;
+  border: 1px solid rgb(255 255 255 / 7%);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--projectx-card) 59%, transparent);
+  text-align: left;
+}
+
+.projectx-clear {
+  margin-bottom: 11px;
+}
+
+.projectx-swatch {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--projectx-swatch);
+}
+
+.projectx-wallpaper-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(178px, 100%), 1fr));
+  gap: 10px;
+}
+
+.projectx-wallpaper-option {
+  padding: 0;
+  overflow: hidden;
+  text-align: left;
+  border: 1px solid rgb(255 255 255 / 9%);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--projectx-card) 66%, transparent);
+}
+
+.projectx-wallpaper-option img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background-color: #242c3b;
+}
+
+.projectx-wallpaper-option span {
+  display: block;
+  padding: 8px 10px;
+}
+
+.projectx-settings button:hover,
+.projectx-settings-nav button[aria-expanded="true"],
+.projectx-settings button[aria-pressed="true"] {
+  background-color: color-mix(in srgb, var(--projectx-accent) 23%, var(--projectx-raised));
+  color: var(--projectx-label);
+}
+
+.projectx-settings button[aria-pressed="true"],
+.projectx-settings-nav button[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--projectx-accent) 66%, transparent);
+}
+
+.projectx-settings-nav button[aria-expanded="true"] .projectx-icon {
+  color: var(--projectx-accent);
+}
+
+.projectx-settings button:focus-visible,
+#header .projectx-nav-button:focus-visible {
+  outline: 2px solid var(--projectx-accent);
+  outline-offset: -2px;
+}
+
+.projectx-status {
+  padding: 7px 15px;
+  color: #ffd2b9;
+}

@@ -1,0 +1,26 @@
+# --- зависимости и сборка ---
+node_modules/
+launcher/node_modules/
+launcher/dist/
+build/release-out/
+
+# --- пользовательские данные ядра (никогда не коммитим) ---
+core/logs/*
+!core/logs/.gitkeep
+core/storage/*
+!core/storage/.gitkeep
+core/configs/_main.cfg
+core/configs/auto_delivery.cfg
+core/configs/auto_response.cfg
+core/__pycache__/
+**/__pycache__/
+*.pyc
+
+# --- секреты и приватные данные (страховка от случайного коммита) ---
+*.session
+*.session.bak
+*.sqlite3
+*.bak
+.idea/
+venv/
+venv2/

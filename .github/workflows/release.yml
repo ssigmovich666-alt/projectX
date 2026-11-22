@@ -1,0 +1,53 @@
+name: release
+
+# Собирает exe, обфусцирует код лаунчера, пакует ядро и публикует релиз с манифестом.
+# Запуск: пуш тега вида v0.7.7  (git tag v0.7.7 && git push origin v0.7.7)
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install launcher deps
+        working-directory: launcher
+        run: npm ci
+
+      - name: Point update-config at this repo
+        working-directory: launcher
+        run: node scripts/set-update-config.js
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Obfuscate launcher code
+        working-directory: launcher
+        run: npm run obfuscate
+
+      - name: Build portable exe
+        working-directory: launcher
+        run: npm run build
+
+      - name: Package release assets + manifest
+        working-directory: launcher
+        run: node ../build/make-release.js
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/release-out/*
+          fail_on_unmatched_files: true

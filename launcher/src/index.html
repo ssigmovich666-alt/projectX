@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self' data:; connect-src 'none'">
+<title>ProjectX</title><link rel="stylesheet" href="style.css"><script src="sounds.js" defer></script><script src="renderer.js" defer></script>
+</head>
+<body>
+<header class="titlebar"><img class="tb-logo" src="assets/logo.png" alt=""><span>ProjectX</span><span id="tb-status" class="tb-status">offline</span></header>
+<div class="shell">
+  <aside class="rail">
+    <div class="brand"><img class="logo" src="assets/logo.png" alt=""><div>ProjectX<small id="brand-version">FUNPAY</small></div></div>
+    <nav id="navigation" aria-label="Навигация">
+      <button data-page="home" aria-current="page"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>Главная</span></button>
+      <button data-page="plugins"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Плагины</span></button>
+      <button data-page="functions"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg><span>Функции</span></button>
+      <button data-page="accounts"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.3-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.8c1.6.8 2.6 2.4 3 5.2"/></svg><span>Аккаунты</span></button>
+      <button data-page="commands"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 19L14 5"/><path d="M14 17h6"/></svg><span>/команды</span></button>
+      <button data-page="chats"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></svg><span>Чаты</span></button>
+      <button data-page="logs"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg><span>Логи</span></button>
+      <button data-page="settings"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg><span>Настройки</span></button>
+    </nav>
+    <div class="rail-foot"><span class="dot" id="rail-dot" aria-hidden="true"></span><span id="rail-status">Бот остановлен</span></div>
+  </aside>
+  <main id="workspace">
+    <section id="home" class="page" aria-labelledby="hero-title">
+      <div id="setup-banner" class="banner" hidden>
+        <span>Нет <code>configs/_main.cfg</code>. Пройдите первую настройку бота: ключ FunPay и токен Telegram.</span>
+        <button id="setup" class="secondary">Первая настройка</button>
+      </div>
+      <div class="hero" id="hero">
+        <div class="scan" aria-hidden="true"></div>
+        <pre class="boot" id="boot" aria-hidden="true"></pre>
+        <div class="hero-copy">
+          <h1 id="hero-title">&gt; projectx<span class="cur" aria-hidden="true">_</span></h1>
+          <p class="sub" id="hero-sub">Бот для продавцов FunPay</p>
+          <div class="launch-controls">
+            <button id="start" class="primary" disabled><svg class="play-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg><span>Запустить бота</span></button>
+            <button id="show-console" class="secondary">Консоль</button>
+          </div>
+        </div>
+        <div id="matrix" class="matrix" role="log" aria-live="off" hidden>
+          <div class="matrix-head">
+            <span>&gt; projectx <span id="matrix-state">running</span> <i class="block" aria-hidden="true"></i></span>
+            <div class="matrix-actions">
+              <span id="uptime" class="uptime"></span>
+              <button id="hide-console" class="secondary small" title="Свернуть консоль">Свернуть</button>
+              <button id="restart" class="secondary small">Перезапуск</button>
+              <button id="stop" class="danger small">Стоп</button>
+            </div>
+          </div>
+          <div id="matrix-lines" class="matrix-lines"></div>
+        </div>
+      </div>
+      <div class="cards">
+        <article class="card profile" id="profile-card"><span class="eyebrow">Профиль FunPay</span>
+          <div class="profile-head">
+            <div class="avatar" id="pf-avatar" aria-hidden="true"><span id="pf-initial">?</span><img id="pf-img" alt="" hidden></div>
+            <div class="profile-name"><h2 id="pf-name">Загрузка…</h2><span id="pf-status" class="pf-status"></span></div>
+          </div>
+          <dl class="pf-stats">
+            <div><dt>Рейтинг</dt><dd id="pf-rating">—</dd></div>
+            <div><dt>Отзывы</dt><dd id="pf-reviews">—</dd></div>
+            <div><dt>Баланс <button id="pf-eye" class="pf-eye" type="button" title="Скрыть баланс">◉</button></dt><dd id="pf-balance">—</dd></div>
+            <div><dt>Продажи</dt><dd id="pf-sales">—</dd></div>
+          </dl>
+          <p class="pf-reg"><span>На FunPay с</span> <b id="pf-registered">—</b></p>
+          <p class="pf-updated" id="pf-updated"></p>
+          <div class="row-buttons"><button id="pf-refresh" class="secondary">Обновить</button><button id="pf-open" class="secondary" disabled>Открыть на FunPay</button></div>
+        </article>
+        <article class="card env"><span class="eyebrow">Окружение</span>
+          <dl><div><dt>Версия бота</dt><dd id="env-version">—</dd></div><div><dt>Python</dt><dd id="env-python">—</dd></div><div><dt>Плагины</dt><dd id="env-plugins">—</dd></div><div><dt>Конфиг</dt><dd id="env-config">—</dd></div><div><dt>Аптайм бота</dt><dd id="st-uptime">—</dd></div></dl>
+          <button id="open-bot" class="secondary"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/></svg><span>Папка бота</span></button>
+        </article>
+      </div>
+    </section>
+
+    <section id="plugins" class="page" hidden>
+      <h1>Плагины</h1>
+      <div class="toolbar"><input id="plugin-search" type="search" placeholder="Поиск плагинов" aria-label="Поиск плагинов"><button id="plugins-refresh" class="secondary">Обновить</button><button id="open-plugins" class="secondary">Папка плагинов</button></div>
+      <p class="hint" id="plugins-hint">Нажмите на плагин, чтобы включить или выключить его.</p>
+      <div id="plugins-banner" class="banner" hidden><span>Изменения в плагинах вступят в силу после перезапуска бота.</span><button id="plugins-restart" class="secondary">Перезапустить бота</button></div>
+      <div id="plugin-list" class="grid"></div>
+    </section>
+
+    <section id="functions" class="page" hidden>
+      <h1>Функции</h1>
+      <div id="functions-banner" class="banner" hidden><span>Бот работает. Настройки читаются при запуске, поэтому изменения вступят в силу после перезапуска.</span><button id="functions-restart" class="secondary">Перезапустить бота</button></div>
+      <p class="hint">Клик включает или выключает функцию. Правый клик раскрывает её настройки (у функций со значком ▾).</p>
+      <div id="function-list" class="modules"></div>
+    </section>
+
+    <section id="accounts" class="page" hidden>
+      <h1>Аккаунты</h1>
+      <div id="accounts-banner" class="banner" hidden><span>Аккаунт переключён. Бот всё ещё работает на старом, перезапустите его.</span><button id="accounts-restart" class="secondary">Перезапустить бота</button></div>
+      <div id="account-list" class="acc-list"></div>
+      <form id="account-form" class="card acc-add">
+        <span class="eyebrow">Добавить аккаунт</span>
+        <div class="acc-row"><input id="account-key" type="password" autocomplete="off" spellcheck="false" placeholder="golden_key, 32 символа" aria-label="golden_key"><button class="primary compact" type="submit">Добавить</button></div>
+        <p class="hint">golden_key берётся из браузера, где вы вошли в нужный аккаунт FunPay: F12 → Application → Cookies → funpay.com → golden_key. Ключ хранится только на этом компьютере в зашифрованном виде и нигде не показывается. Не отправляйте его никому.</p>
+      </form>
+    </section>
+
+    <section id="commands" class="page" hidden>
+      <div class="cmd-top"><h1>Мои команды</h1><button id="cmd-add" class="secondary" type="button">+ Добавить команду</button></div>
+      <div id="commands-banner" class="banner" hidden><span>Бот работает. Команды читаются при запуске, изменения вступят в силу после перезапуска.</span><button id="commands-restart" class="secondary">Перезапустить бота</button></div>
+      <p class="hint">Покупатель пишет команду в чат, бот отвечает текстом. Варианты одной команды пишите через <code>|</code>, например <code>привет|hi</code>. Автоответчик должен быть включён во «Функциях».</p>
+      <div class="cmd-layout">
+        <div id="cmd-list" class="cmd-list"></div>
+        <aside class="card cmd-vars"><span class="eyebrow">Переменные в ответах</span><div id="cmd-vars"></div><p class="hint">Клик по переменной вставляет её в ответ, где стоит курсор.</p></aside>
+      </div>
+      <div class="actions cmd-actions"><button id="cmd-save" class="primary compact" type="button">Сохранить</button><output id="cmd-message" role="status"></output></div>
+    </section>
+
+    <section id="logs" class="page" hidden>
+      <h1>Логи</h1>
+      <div class="toolbar">
+        <div id="log-levels" class="tabs inline" role="group" aria-label="Уровень"></div>
+        <input id="log-search" type="search" placeholder="Поиск по логу" aria-label="Поиск по логу">
+        <button id="logs-refresh" class="secondary">Обновить</button>
+      </div>
+      <div class="card log-view"><div id="log-list" class="log-list" role="log"></div></div>
+      <p class="hint" id="log-meta"></p>
+    </section>
+
+    <section id="settings" class="page" hidden>
+      <h1>Настройки</h1>
+      <div id="settings-tabs" class="tabs" role="group"></div>
+      <form id="settings-form">
+        <div id="controls" class="card"></div>
+        <div class="actions"><button class="primary compact" type="submit">Сохранить</button><output id="settings-message" role="status"></output></div>
+      </form>
+      <div class="card quick">
+        <span class="eyebrow">Файлы бота</span>
+        <div class="toolbar"><button class="secondary" data-open="configs">configs</button><button class="secondary" data-open="storage">storage</button><button class="secondary" data-open="logs">logs</button><button class="secondary" data-open="plugins">plugins</button></div>
+      </div>
+    </section>
+
+    <section id="chats" class="page" hidden>
+      <div class="site-bar"><button id="site-back" class="secondary small" title="Назад">←</button><button id="site-reload" class="secondary small" title="Обновить">↻</button><button id="site-chats" class="secondary small">Чаты</button><button id="site-home" class="secondary small">FunPay</button><button id="site-support" class="secondary small">Поддержка</button><button id="site-settings" class="secondary small">Фон и тема</button><span id="site-note" class="hint"></span></div>
+      <div class="chat-embed card" id="chat-site"><div id="chat-site-slot" class="chat-site-slot"></div></div>
+    </section>
+  </main>
+</div>
+<div id="toasts" aria-live="polite" aria-atomic="false"></div>
+<div id="update-bar" class="update-bar" role="status" hidden><span id="update-text">Доступно обновление</span><button id="update-restart" class="primary compact" type="button">Перезапустить</button><button id="update-later" class="secondary small" type="button" title="Позже">✕</button></div>
+<div id="exit-prompt" class="exit-prompt" role="alert" hidden><b>Бот ещё работает</b><span>Нажмите «закрыть» ещё раз, чтобы остановить бота и выйти</span><i id="exit-bar"></i></div>
+</body>
+</html>
