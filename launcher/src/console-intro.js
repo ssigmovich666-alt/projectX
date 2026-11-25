@@ -10,7 +10,7 @@ const consoleIntro = (() => {
   const hiddenText = new Highlight();
   const graphemes = new Intl.Segmenter(undefined, {granularity:'grapheme'});
   let schedules = new WeakMap();
-  const chars = '·.,:;i+=ox%#@';
+  const chars = '.,:;i+=ox%#@';
   const colors = ['#45323a','#74504d','#ac7161','#df9d82','#b4a6aa','#e5d5cd',
     '#75431e','#ab641c','#d59836','#ffd471','#262336','#a193a5'];
   const tile = 12;
@@ -94,32 +94,19 @@ const consoleIntro = (() => {
       for (let i=0; i<cols; i++) {
         const x = ((i+.5)/cols*2-1) * width / unit;
         const u=x/zoom, v=y/zoom;
-                const r=Math.hypot(u,v);
-        const angle=Math.atan2(v,u);
+        const r=Math.hypot(u,v);
         const noise=((i*71+j*109+i*j*7)%97)/97;
         let glyph=Math.floor(noise*chars.length), color;
         const lid=opening*.60*(1-.59*u*u);
-        const upper=-(v+.035*u*u)-lid;
-        const lashBase=u-upper*(.50+.19*u);
-        const lashIndex=Math.round((lashBase+.78)*19);
-        const lashRoot=lashIndex/19-.78;
-        const lashLength=(.09+.10*Math.cos(lashRoot*1.8))*(.76+.24*Math.sin(lashIndex*8.3));
-        const lashCurve=lashRoot+upper*(.50+.19*lashRoot)+upper*upper*1.9;
-        const lash=opening>.2&&lashIndex>=0&&lashIndex<30&&upper>=0&&upper<lashLength
-          &&Math.abs(u-lashCurve)<.012*(1-.65*upper/lashLength);
         if (Math.abs(v+.035*u*u)>lid) {
           const ridge=Math.cos((v+u*u*.09)*42);
           color=Math.abs(v)-lid<.04 ? 0 : Math.min(3,Math.floor(1.4+ridge*.85+noise*.8));
-          if (lash) { color=10; glyph=10+Math.floor(noise*3); }
         } else if (r>.48) {
           color=noise>.4 ? 5 : 4;
         } else if (r>.22) {
-          const fibers = Math.sin(angle*61 + r*37) + .45*Math.sin(angle*113 - r*52);
-          const rings = .55*Math.sin(r*148 + Math.sin(angle*12)*1.8);
-          const glint = Math.hypot(u+.15, v+.18);
-          color = r>.455 || r<.24 ? 6 : Math.max(6,Math.min(9,Math.round(7.6+fibers+rings+noise*.7)));
-          glyph = Math.max(1, Math.min(chars.length-1, Math.round(5+fibers*3+rings*2+noise*3)));
-          if (glint < .052) { color = 5; glyph = glint < .024 ? 12 : 9; }
+          const angle=Math.atan2(v,u);
+          const ray=Math.sin(angle*49+r*17)+.55*Math.sin(angle*87-r*23);
+          color=r>.455 || r<.24 ? 6 : Math.max(6,Math.min(9,Math.round(7.75+ray+noise*.6)));
         } else {
           // Persistent star positions expand outward with the pupil.
           const sx=Math.floor(u*110), sy=Math.floor(v*110);
@@ -129,7 +116,7 @@ const consoleIntro = (() => {
           } else { color=10; glyph=0; }
           const ax=Math.abs(x)/letterSize, ay=Math.abs(y)/letterSize;
           if (t>.38 && ay<=1 && Math.abs(ax-.78*ay)<.15) {
-            color=colors.length; glyph=9+Math.floor(noise*4);
+            color=colors.length; glyph=8+Math.floor(noise*4);
           }
         }
         ctx.drawImage(atlas,glyph*tile,color*tile,tile,tile,i*dx,j*dy,dx,dy);
