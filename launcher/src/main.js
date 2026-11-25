@@ -4,6 +4,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { BotProcess, resolvePython } = require('./bot');
 const { inspectBot, listPlugins, togglePlugin, tailLog } = require('./cardinal-data');
+const { readPluginSettings, setPluginSetting } = require('./plugin-settings');
+let reminderWrite = Promise.resolve();
+async function reminderPlugin(botDir, file) {
+  const plugin = (await listPlugins(botDir)).find(item => item.file === file && file === 'buyer_reminders.py');
+  if (!plugin) throw new Error('Плагин напоминаний не найден.');
+  return '2c62921b-dd65-43d9-947a-ee85702bf4ca';
+}
 const { CATALOG, readMainConfig, readFunctions, setFunction, setValue } = require('./main-cfg');
 const { Accounts } = require('./accounts');
 let accountsRef = null;
@@ -329,6 +336,16 @@ else {
         { cwd: prefs.botDir, detached: true, stdio: 'ignore', windowsVerbatimArguments: true }).unref();
     });
     register('cl:plugins', () => listPlugins(prefs.botDir));
+    register('cl:reminder-settings', async file => {
+      const dir = prefs.botDir;
+      return readPluginSettings(dir, await reminderPlugin(dir, file));
+    });
+    register('cl:set-reminder-setting', (file, key, value) => {
+      const dir = prefs.botDir;
+      const write = reminderWrite.then(async () => setPluginSetting(dir, await reminderPlugin(dir, file), key, value));
+      reminderWrite = write.catch(() => {});
+      return write;
+    });
     register('cl:toggle-plugin', (file, enabled) => togglePlugin(prefs.botDir, file, enabled));
     register('cl:functions', async () => ({ catalog: CATALOG, values: await readFunctions(prefs.botDir) }));
     register('cl:set-function', (id, value) => setFunction(prefs.botDir, id, value));

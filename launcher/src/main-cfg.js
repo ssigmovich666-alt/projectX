@@ -121,7 +121,7 @@ async function setFunction(botDir, id, rawValue) {
 }
 
 // Меняет одно значение в _main.cfg, не трогая остальное (комментарии, порядок, переносы строк).
-async function setValue(botDir, section, key, value) {
+async function setValue(botDir, section, key, value, { createSection = false } = {}) {
   const item = { section, key };
   const source = await fs.readFile(file(botDir), 'utf8');
   const eol = source.includes('\r\n') ? '\r\n' : '\n';
@@ -132,9 +132,14 @@ async function setValue(botDir, section, key, value) {
   if (entry) lines.splice(entry.start, entry.end - entry.start + 1, ...rendered);
   else {
     const header = entries.find(e => e.type === 'section' && e.section === item.section);
-    if (!header) throw new Error(`В _main.cfg нет секции [${item.section}].`);
-    const last = entries.filter(e => e.type === 'key' && e.section === item.section).pop();
-    lines.splice((last ? last.end : header.line) + 1, 0, ...rendered);
+    if (!header && createSection) {
+      while (lines.at(-1) === '') lines.pop();
+      lines.push('', `[${section}]`, ...rendered, '');
+    } else {
+      if (!header) throw new Error(`В _main.cfg нет секции [${item.section}].`);
+      const last = entries.filter(e => e.type === 'key' && e.section === item.section).pop();
+      lines.splice((last ? last.end : header.line) + 1, 0, ...rendered);
+    }
   }
   await backup(botDir);
   const temporary = file(botDir) + '.launcher.tmp';

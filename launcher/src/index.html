@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self' data:; connect-src 'none'">
-<title>ProjectX</title><link rel="stylesheet" href="style.css"><script src="sounds.js" defer></script><script src="renderer.js" defer></script>
+<title>ProjectX</title><link rel="stylesheet" href="style.css"><script src="sounds.js" defer></script><script src="console-intro.js" defer></script><script src="renderer.js" defer></script>
 </head>
 <body>
 <header class="titlebar"><img class="tb-logo" src="assets/logo.png" alt=""><span>ProjectX</span><span id="tb-status" class="tb-status">offline</span></header>
@@ -49,7 +49,7 @@
               <button id="stop" class="danger small">Стоп</button>
             </div>
           </div>
-          <div id="matrix-lines" class="matrix-lines"></div>
+          <div class="console-body"><canvas id="console-intro" aria-hidden="true" hidden></canvas><div id="matrix-lines" class="matrix-lines"></div></div>
         </div>
       </div>
       <div class="cards">

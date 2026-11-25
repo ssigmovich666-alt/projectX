@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld('cardinal', {
   cancelRestart: () => call('cl:cancel-restart'),
   setup: () => call('cl:setup'),
   plugins: () => call('cl:plugins'),
+  reminderSettings: file => call('cl:reminder-settings', file),
+  setReminderSetting: (file, key, value) => call('cl:set-reminder-setting', file, key, value),
   togglePlugin: (file, enabled) => call('cl:toggle-plugin', file, enabled),
   functions: () => call('cl:functions'),
   setFunction: (id, value) => call('cl:set-function', id, value),

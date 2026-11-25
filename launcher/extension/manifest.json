@@ -44,10 +44,10 @@
         "https://funpay.com/*"
       ],
       "css": [
-        "tools.css"
+        "tools.css", "favorites.css"
       ],
       "js": [
-        "tools.js"
+        "tools.js", "favorites.js"
       ],
       "run_at": "document_end"
     }

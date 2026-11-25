@@ -39,7 +39,9 @@
   const resource = path => chrome.runtime.getURL(path);
   const wallpaperUrl = id => resource("backgrounds/" + id + ".jpg");
   const options = { [wallpaperKey]: new Map(), [themeKey]: new Map() };
-  const preferences = { [wallpaperKey]: "", [themeKey]: "" };
+  // У распакованного расширения после переноса меняется ID и хранилище настроек.
+  const launcher = /(?:Electron|FunPayXLauncher)\//.test(navigator.userAgent);
+  const preferences = { [wallpaperKey]: launcher ? "02" : "", [themeKey]: launcher ? "violet" : "" };
   const root = document.documentElement;
   if (!root) return;
 
@@ -96,7 +98,9 @@
     const snapshot = localStorage.getItem(cacheKey);
     if (snapshot && snapshot.length <= 128) {
       const cached = JSON.parse(snapshot);
-      for (const key of keys) readPreference(key, cached?.[key]);
+      for (const key of keys) {
+        if (!launcher || cached?.[key]) readPreference(key, cached?.[key]);
+      }
     }
   } catch {
     // Fall back to extension storage if the cache is missing or unreadable.
@@ -117,7 +121,7 @@
   });
   const settingsLoaded = chrome.storage.local.get(keys).then(settings => {
     for (const key of keys) {
-      if (!receivedChanges.has(key)) readPreference(key, settings[key]);
+      if (!receivedChanges.has(key) && Object.hasOwn(settings, key)) readPreference(key, settings[key]);
     }
     synchronized = true;
     applyAppearance();
@@ -140,7 +144,8 @@
   const trigger = document.createElement("a");
   trigger.href = "#projectx-settings";
   trigger.className = "projectx-nav-button";
-  trigger.textContent = "ProjectX";
+  trigger.textContent = isSupport ? "⚙" : "ProjectX";
+  if (isSupport) trigger.setAttribute("aria-label", "Настройки оформления");
   trigger.setAttribute("role", "button");
   trigger.setAttribute("aria-haspopup", "dialog");
   item.append(trigger);
@@ -187,20 +192,24 @@
   dialog.innerHTML = `
     <header class="projectx-titlebar">
       <img width="32" height="32" alt="">
-      <span id="projectx-window-title">ProjectX</span>
+      <span id="projectx-window-title">${isSupport ? "Настройки оформления" : "ProjectX"}</span>
       <div class="projectx-window-controls">
         <button type="button" class="projectx-expand" aria-label="Развернуть" title="Развернуть" aria-pressed="false">□</button>
         <button type="button" class="projectx-close" aria-label="Закрыть" title="Закрыть">×</button>
       </div>
     </header>
     <div class="projectx-settings-body">
-      <nav class="projectx-settings-nav" aria-label="Разделы ProjectX">
+      <nav class="projectx-settings-nav" aria-label="Разделы настроек">
         <button type="button" aria-controls="projectx-background-panel" aria-expanded="false" autofocus>
           <span class="projectx-icon projectx-icon-landscape" aria-hidden="true"></span>Фон
         </button>
         <button type="button" aria-controls="projectx-theme-panel" aria-expanded="false">
           <span class="projectx-icon projectx-icon-theme" aria-hidden="true"></span>Темы
         </button>
+        <button type="button" aria-controls="projectx-commands-panel" aria-expanded="false">
+          <span class="projectx-icon projectx-icon-commands" aria-hidden="true"></span>/команды
+        </button>
+        ${isSupport ? "" : '<button type="button" aria-controls="projectx-config-panel" aria-expanded="false">Перенос настроек</button>'}
       </nav>
       <div class="projectx-workspace">
         <section class="projectx-section" id="projectx-background-panel" hidden>
@@ -216,6 +225,25 @@
             <div class="projectx-theme-presets"></div>
             <h3>Палитры</h3>
             <div class="projectx-theme-palettes"></div>
+          </div>
+        </section>
+        <section class="projectx-section" id="projectx-commands-panel" hidden>
+          <h2>/команды</h2>
+          <div class="projectx-section-scroll">
+            <p class="projectx-hint">Команды для поля чата и панели под ним. Работают в любом браузере с этим расширением. Команды из лаунчера подтягиваются сами и идут после этих. Переменные: $username, $order_id, $order_link, $date, $time.</p>
+            <div class="projectx-commands-list"></div>
+            <div class="projectx-commands-actions">
+              <button type="button" class="projectx-row projectx-commands-add">+ Добавить команду</button>
+              <button type="button" class="projectx-row projectx-commands-save">Сохранить</button>
+            </div>
+          </div>
+        </section>
+        <section class="projectx-section" id="projectx-config-panel" hidden>
+          <h2>Перенос настроек</h2>
+          <div class="projectx-section-scroll">
+            <button type="button" class="projectx-row projectx-export">Скачать настройки и избранные чаты</button>
+            <button type="button" class="projectx-row projectx-import">Загрузить настройки</button>
+            <input type="file" accept=".json,application/json" class="projectx-import-file" hidden>
           </div>
         </section>
         <span class="projectx-status" role="status" hidden></span>
@@ -303,13 +331,133 @@
     ...presets,
   ]);
   addThemeOptions(dialog.querySelector(".projectx-theme-palettes"), palettes);
+
+  // /команды, сохранённые в самом расширении (chrome.storage.local), а не в commands.json лаунчера.
+  const commandsKey = "chatCommands";
+  const configKeys = [...keys, commandsKey, "chatFavorites"];
+  if (!isSupport) {
+    const input = dialog.querySelector(".projectx-import-file");
+    dialog.querySelector(".projectx-export").addEventListener("click", async () => {
+      try {
+        const config = await chrome.storage.local.get(configKeys);
+        const url = URL.createObjectURL(new Blob([JSON.stringify({
+          version: 1, ...preferences, ...config
+        }, null, 2)], { type: "application/json" }));
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "funpayx-settings.json";
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      } catch {
+        status.textContent = "Не удалось скачать настройки.";
+        status.hidden = false;
+      }
+    });
+    dialog.querySelector(".projectx-import").addEventListener("click", () => input.click());
+    input.addEventListener("change", async () => {
+      const file = input.files[0];
+      input.value = "";
+      if (!file) return;
+      try {
+        if (file.size > 2_000_000) throw new Error("Config too large");
+        const config = JSON.parse(await file.text());
+        if (!config || typeof config !== "object" || Array.isArray(config) ||
+            (config.version !== undefined && config.version !== 1)) throw new Error("Invalid config");
+        const updates = Object.fromEntries(keys.filter(key => typeof config[key] === "string")
+          .map(key => [key, config[key]]));
+        if (Array.isArray(config[commandsKey])) {
+          updates[commandsKey] = config[commandsKey].filter(item =>
+            typeof item?.command === "string" && typeof item.response === "string").slice(0, 500);
+        }
+        if (Array.isArray(config.chatFavorites)) {
+          const current = (await chrome.storage.local.get("chatFavorites")).chatFavorites;
+          const favorites = new Map();
+          for (const item of [...config.chatFavorites, ...(Array.isArray(current) ? current : [])]) {
+            const id = String(item?.id ?? "");
+            if (!/^\d{1,20}$/.test(id) || favorites.has(id)) continue;
+            favorites.set(id, { id, name: String(item.name ?? "").slice(0, 80), avatar: String(item.avatar ?? "").slice(0, 2048) });
+            if (favorites.size >= 100) break;
+          }
+          updates.chatFavorites = [...favorites.values()];
+        }
+        if (!Object.keys(updates).length) throw new Error("Empty config");
+        await chrome.storage.local.set(updates);
+        status.textContent = "Настройки загружены.";
+      } catch {
+        status.textContent = "Не удалось загрузить настройки. Проверьте файл JSON.";
+      }
+      status.hidden = false;
+    });
+  }
+  const commandsList = dialog.querySelector(".projectx-commands-list");
+  function addCommandRow(command = "", response = "") {
+    const row = document.createElement("div");
+    row.className = "projectx-command-row";
+    const name = document.createElement("input");
+    name.type = "text";
+    name.placeholder = "/1";
+    name.maxLength = 40;
+    name.value = command;
+    name.setAttribute("aria-label", "Команда");
+    const text = document.createElement("textarea");
+    text.rows = 2;
+    text.placeholder = "Текст ответа";
+    text.value = response;
+    text.setAttribute("aria-label", "Ответ");
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "projectx-command-remove";
+    remove.title = "Убрать команду";
+    remove.setAttribute("aria-label", "Убрать команду");
+    remove.textContent = "×";
+    remove.addEventListener("click", () => row.remove());
+    row.append(name, text, remove);
+    commandsList.append(row);
+    return row;
+  }
+  async function loadCommandRows() {
+    commandsList.replaceChildren();
+    try {
+      const stored = (await chrome.storage.local.get(commandsKey))[commandsKey];
+      for (const item of Array.isArray(stored) ? stored : []) addCommandRow(String(item?.command || ""), String(item?.response || ""));
+    } catch {
+      status.textContent = "Не удалось загрузить команды.";
+      status.hidden = false;
+    }
+    if (!commandsList.children.length) addCommandRow();
+  }
+  dialog.querySelector(".projectx-commands-add").addEventListener("click", () => addCommandRow().querySelector("input").focus());
+  dialog.querySelector(".projectx-commands-save").addEventListener("click", async () => {
+    const list = [];
+    const seen = new Set();
+    for (const row of commandsList.children) {
+      const command = row.querySelector("input").value.trim().toLowerCase().replace(/\s*\|\s*/g, "|");
+      const response = row.querySelector("textarea").value.replace(/\r/g, "").trim();
+      if (!command && !response) continue;
+      if (!command || !response) { status.textContent = "У каждой команды должны быть имя и ответ."; status.hidden = false; return; }
+      for (const part of command.split("|").filter(Boolean)) {
+        if (seen.has(part)) { status.textContent = "Команда «" + part + "» указана дважды."; status.hidden = false; return; }
+        seen.add(part);
+      }
+      list.push({ command, response });
+    }
+    try {
+      await chrome.storage.local.set({ [commandsKey]: list.slice(0, 500) });
+      status.textContent = "Команды сохранены: " + list.length + ".";
+    } catch {
+      status.textContent = "Не удалось сохранить команды.";
+    }
+    status.hidden = false;
+  });
+  sectionButtons.find(button => button.getAttribute("aria-controls") === "projectx-commands-panel")
+    ?.addEventListener("click", loadCommandRows);
   for (const button of sectionButtons) {
     button.addEventListener("click", () => showSection(button));
   }
 
   function openSettings() {
     if (dialog.open) return;
-    showSection(null);
+    showSection(sectionButtons.find(button => button.getAttribute("aria-expanded") === "true") || sectionButtons[0]);
     dialog.showModal();
   }
 
@@ -327,10 +475,13 @@
     openSettings();
     respond(true);
   });
-  if (location.hash === "#projectx-settings") {
+  function openFromHash() {
+    if (location.hash !== "#projectx-settings") return;
     openSettings();
     history.replaceState(history.state, "", location.pathname + location.search);
   }
+  window.addEventListener("hashchange", openFromHash);
+  openFromHash();
   dialog.querySelector(".projectx-close").addEventListener("click", () => dialog.close());
   const expand = dialog.querySelector(".projectx-expand");
   expand.addEventListener("click", () => {

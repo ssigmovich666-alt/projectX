@@ -80,6 +80,7 @@ function duration(ms) {
 
 // ---- главная: состояние и консоль ----
 function renderStatus() {
+  consoleIntro(status);
   const on = status.running, wait = !on && status.restartPending;
   $('start').disabled = on || !state.bot.hasMain;
   $('start').querySelector('span').textContent = wait ? 'Запустить сейчас' : 'Запустить бота';
@@ -148,6 +149,37 @@ function renderEnvironment() {
 
 // ---- плагины ----
 async function loadPlugins() { plugins = await call(api.plugins()); renderPlugins(); renderEnvironment(); }
+const reminderPanels = new Map();
+function reminderPanel(plugin) {
+  const panel = node('div', null, 'module-settings');
+  panel.addEventListener('click', event => event.stopPropagation());
+  panel.addEventListener('keydown', event => event.stopPropagation());
+  const data = reminderPanels.get(plugin.file);
+  const settings = node('button', data ? 'Скрыть настройки' : 'Настройки напоминаний', 'secondary small');
+  settings.addEventListener('click', guard(async () => {
+    if (reminderPanels.has(plugin.file)) reminderPanels.delete(plugin.file);
+    else reminderPanels.set(plugin.file, await call(api.reminderSettings(plugin.file)));
+    renderPlugins();
+  }));
+  panel.append(settings);
+  for (const field of data?.fields || []) {
+    const row = node('label', null, 'setting');
+    const input = node('input');
+    input.type = field.type === 'toggle' ? 'checkbox' : 'number';
+    if (input.type === 'checkbox') input.checked = field.value;
+    else { input.min = field.min; input.max = field.max; input.step = 1; input.value = field.value; }
+    input.addEventListener('change', guard(async () => {
+      try {
+        reminderPanels.set(plugin.file, await call(api.setReminderSetting(plugin.file, field.key,
+          input.type === 'checkbox' ? input.checked : input.value)));
+      } finally { renderPlugins(); }
+    }));
+    row.append(node('span', field.name), input);
+    panel.append(row);
+  }
+  return panel;
+}
+
 function renderPlugins() {
   const query = $('plugin-search').value.trim().toLowerCase();
   const visible = plugins.filter(plugin => [plugin.name, plugin.description, plugin.file].join(' ').toLowerCase().includes(query));
@@ -177,6 +209,7 @@ function renderPlugins() {
     meta.append(node('span', plugin.enabled ? 'включён' : 'выключен', 'tag ' + (plugin.enabled ? 'on' : 'off')), node('span', plugin.file, 'tag'));
     if (plugin.credits) meta.append(node('span', plugin.credits, 'tag'));
     card.append(head, node('p', plugin.description || 'Без описания.'), meta);
+    if (plugin.file === 'buyer_reminders.py') card.append(reminderPanel(plugin));
     return card;
   }) : [node('p', plugins.length ? 'Ничего не найдено.' : 'В папке plugins нет плагинов.', 'hint')]));
 }
