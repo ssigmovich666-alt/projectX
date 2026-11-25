@@ -71,8 +71,8 @@ const consoleIntro = (() => {
     }
   }
 
-  function projectMask(cols, rows, dx, dy, letters) {
-    const layout = [cols, rows, dx / dy, letters].join(':');
+  function projectMask(cols, rows, dx, dy) {
+    const layout = [cols, rows, dx / dy].join(':');
     if (layout === wordLayout) return wordPixels;
     wordLayout = layout;
     wordMask.width = cols;
@@ -84,7 +84,7 @@ const consoleIntro = (() => {
     wordInk.textAlign = 'left';
     wordInk.textBaseline = 'middle';
     wordInk.fillStyle = '#fff';
-    wordInk.fillText(word.slice(0, letters), -wordInk.measureText(word).width / 2, 0);
+    wordInk.fillText(word, -wordInk.measureText(word).width / 2, 0);
     wordInk.restore();
     wordPixels = wordInk.getImageData(0, 0, cols, rows).data;
     return wordPixels;
@@ -126,8 +126,8 @@ const consoleIntro = (() => {
     const opening = smooth(t / .32);
     const zoom = Math.exp(3.05*smooth((t-.22)/.67));
     const letterSize = .034 * zoom;
-    const letters = Math.min(word.length, Math.max(0, Math.floor((t - .69) * 31)));
-    const wordGrid = letters ? projectMask(cols, rows, dx, dy, letters) : null;
+    const wordOpacity = .56 * smooth((t - .69) / .21);
+    const wordGrid = wordOpacity > 0 ? projectMask(cols, rows, dx, dy) : null;
     for (let j=0; j<rows; j++) {
       const y = ((j+.5)/rows*2-1) * height / unit;
       for (let i=0; i<cols; i++) {
@@ -172,7 +172,7 @@ const consoleIntro = (() => {
             backgroundLetter = false;
           }
         }
-        if (backgroundLetter) ctx.globalAlpha = .56;
+        if (backgroundLetter) ctx.globalAlpha = wordOpacity;
         ctx.drawImage(atlas,glyph*tile,color*tile,tile,tile,i*dx,j*dy,dx,dy);
         if (backgroundLetter) ctx.globalAlpha = 1;
       }
