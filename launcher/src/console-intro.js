@@ -14,6 +14,10 @@ const consoleIntro = (() => {
   const colors = ['#45323a','#74504d','#ac7161','#df9d82','#b4a6aa','#e5d5cd',
     '#75431e','#ab641c','#d59836','#ffd471','#262336','#a193a5'];
   const tile = 12;
+  const word = 'PROJECT';
+  const wordMask = document.createElement('canvas');
+  const wordInk = wordMask.getContext('2d', {willReadFrequently:true});
+  let wordPixels, wordLayout = '';
   const atlas = document.createElement('canvas');
   atlas.width = chars.length * tile;
   atlas.height = (colors.length + 1) * tile;
@@ -67,6 +71,39 @@ const consoleIntro = (() => {
     }
   }
 
+  function projectMask(cols, rows, dx, dy, letters) {
+    const layout = [cols, rows, dx / dy, letters].join(':');
+    if (layout === wordLayout) return wordPixels;
+    wordLayout = layout;
+    wordMask.width = cols;
+    wordMask.height = rows;
+    wordInk.save();
+    wordInk.translate(cols / 2, rows / 2);
+    wordInk.scale(dy / dx, 1);
+    wordInk.font = '900 ' + Math.min(rows * .43, cols * dx / dy * .19) + 'px monospace';
+    wordInk.textAlign = 'left';
+    wordInk.textBaseline = 'middle';
+    wordInk.fillStyle = '#fff';
+    wordInk.fillText(word.slice(0, letters), -wordInk.measureText(word).width / 2, 0);
+    wordInk.restore();
+    wordPixels = wordInk.getImageData(0, 0, cols, rows).data;
+    return wordPixels;
+  }
+
+  function onLash(u, height, opening) {
+    if (opening < .12 || height < 0 || height > .26 || Math.abs(u) > 1.13) return false;
+    const root = Math.round((u - Math.sign(u) * height * .45) / .074);
+    for (let index = root - 1; index <= root + 1; index++) {
+      const base = index * .074;
+      if (Math.abs(base) > .89) continue;
+      const length = (.19 + .07 * Math.cos(base * 1.6)) * (.76 + .24 * Math.sin(index * 3.8) ** 2) * opening;
+      if (height > length) continue;
+      const curve = height * (.35 + height * 1.15) * Math.tanh(base * 2.7);
+      if (Math.abs(u - base - curve) < .029 - .017 * height / length) return true;
+    }
+    return false;
+  }
+
   function paint(t) {
     const w = canvas.clientWidth, h = canvas.clientHeight;
     if (!w || !h) return;
@@ -83,12 +120,14 @@ const consoleIntro = (() => {
     ctx.fillStyle = '#141217';
     ctx.fillRect(0, 0, width, height);
     const unit = Math.min(width, height);
-    const cols = Math.min(220, Math.ceil(94 * width / unit));
-    const rows = Math.min(128, Math.ceil(63 * height / unit));
+    const cols = Math.min(260, Math.ceil(117 * width / unit));
+    const rows = Math.min(150, Math.ceil(78 * height / unit));
     const dx = width / cols, dy = height / rows;
     const opening = smooth(t / .32);
     const zoom = Math.exp(3.05*smooth((t-.22)/.67));
     const letterSize = .034 * zoom;
+    const letters = Math.min(word.length, Math.max(0, Math.floor((t - .69) * 31)));
+    const wordGrid = letters ? projectMask(cols, rows, dx, dy, letters) : null;
     for (let j=0; j<rows; j++) {
       const y = ((j+.5)/rows*2-1) * height / unit;
       for (let i=0; i<cols; i++) {
@@ -101,12 +140,20 @@ const consoleIntro = (() => {
         if (Math.abs(v+.035*u*u)>lid) {
           const ridge=Math.cos((v+u*u*.09)*42);
           color=Math.abs(v)-lid<.04 ? 0 : Math.min(3,Math.floor(1.4+ridge*.85+noise*.8));
+          const upper = -v - .035*u*u - lid;
+          if (onLash(u, upper, opening)) {
+            color = 10;
+            glyph = 9 + Math.floor(noise * 3);
+          }
         } else if (r>.48) {
           color=noise>.4 ? 5 : 4;
         } else if (r>.22) {
           const angle=Math.atan2(v,u);
           const ray=Math.sin(angle*49+r*17)+.55*Math.sin(angle*87-r*23);
           color=r>.455 || r<.24 ? 6 : Math.max(6,Math.min(9,Math.round(7.75+ray+noise*.6)));
+          glyph = 4 + Math.max(0, Math.min(7, Math.round(4 + ray * 1.5 + Math.sin(r * 132))));
+          const glint = Math.hypot(u + .15, v + .19);
+          if (glint < .033) { color = 5; glyph = glint < .017 ? 11 : 7; }
         } else {
           // Persistent star positions expand outward with the pupil.
           const sx=Math.floor(u*110), sy=Math.floor(v*110);
@@ -114,6 +161,10 @@ const consoleIntro = (() => {
           if (star-Math.floor(star)>.954 && Math.abs(u*110-sx-.5)<.19 && Math.abs(v*110-sy-.5)<.19) {
             color=11; glyph=5;
           } else { color=10; glyph=0; }
+          if (wordGrid && wordGrid[(j * cols + i) * 4 + 3] > 100) {
+            color = 11;
+            glyph = 6 + Math.floor(noise * 3);
+          }
           const ax=Math.abs(x)/letterSize, ay=Math.abs(y)/letterSize;
           if (t>.38 && ay<=1 && Math.abs(ax-.78*ay)<.15) {
             color=colors.length; glyph=8+Math.floor(noise*4);
