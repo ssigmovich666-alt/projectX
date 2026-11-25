@@ -2,6 +2,21 @@ const { app, BrowserWindow, ipcMain, shell, dialog, Tray, Menu, screen, safeStor
 const { spawn } = require('node:child_process');
 const fs = require('node:fs');
 const path = require('node:path');
+const { spawn: launchBrowser } = require('node:child_process');
+const chromePath = () => [process.env.LOCALAPPDATA, process.env.ProgramFiles, process.env['ProgramFiles(x86)']]
+  .filter(Boolean).map(root => path.join(root, 'Google', 'Chrome', 'Application', 'chrome.exe'))
+  .find(file => fs.existsSync(file));
+async function openInChrome(raw) {
+  const url = new URL(raw);
+  if (url.protocol !== 'https:' || url.username || url.password) return;
+  const chrome = chromePath();
+  if (!chrome) return shell.openExternal(url.href);
+  await new Promise((resolve, reject) => {
+    const browser = launchBrowser(chrome, [url.href], { detached: true, stdio: 'ignore' });
+    browser.once('error', reject);
+    browser.once('spawn', () => { browser.unref(); resolve(); });
+  });
+}
 const { BotProcess, resolvePython } = require('./bot');
 const { inspectBot, listPlugins, togglePlugin, tailLog } = require('./cardinal-data');
 const { readPluginSettings, setPluginSetting } = require('./plugin-settings');
@@ -287,13 +302,11 @@ app.on('web-contents-created', (_event, contents) => {
   });
   if (contents.getType() === 'webview') {
     contents.setWindowOpenHandler(({ url }) => {
-      // Ссылки FunPay и поддержки FunPay открываем тут же, остальное — в обычном браузере.
-      if (/^https:\/\/([a-z0-9-]+\.)?funpay\.com\//.test(url)) contents.loadURL(url);
-      else if (/^https:\/\//.test(url)) shell.openExternal(url);
+      openInChrome(url).catch(console.error);
       return { action: 'deny' };
     });
     contents.on('will-navigate', (event, url) => {
-      if (!/^https:\/\/([a-z0-9-]+\.)?funpay\.com\//.test(url)) { event.preventDefault(); if (/^https:\/\//.test(url)) shell.openExternal(url); }
+      if (!/^https:\/\/([a-z0-9-]+\.)?funpay\.com\//.test(url)) { event.preventDefault(); openInChrome(url).catch(console.error); }
     });
   }
 });
@@ -408,7 +421,7 @@ else {
 
     register('cl:open-url', async url => {
       if (!/^https:\/\/funpay\.com\//.test(url)) throw new Error('Открываю только ссылки funpay.com.');
-      await shell.openExternal(url);
+      await openInChrome(url);
     });
     register('cl:logs', () => tailLog(prefs.botDir));
     register('cl:open', async kind => {

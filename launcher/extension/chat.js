@@ -186,6 +186,61 @@
     }
   }
 
+  if (!isSupport) {
+    function linkChatText(container) {
+      for (const link of container.querySelectorAll("a[href]")) {
+        if (link.protocol !== "https:") continue;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      }
+      const texts = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (texts.nextNode()) {
+        const text = texts.currentNode;
+        if (!text.parentElement.closest('a, script, style, button') && text.data.includes('https://')) nodes.push(text);
+      }
+      for (const text of nodes) {
+        const fragment = document.createDocumentFragment();
+        let start = 0;
+        for (const match of text.data.matchAll(/https:\/\/[^\s<>"']+/g)) {
+          const href = match[0].replace(/[.,!?;:\])]+$/, '');
+          let url;
+          try { url = new URL(href); } catch { continue; }
+          if (url.username || url.password) continue;
+          fragment.append(text.data.slice(start, match.index));
+          const link = document.createElement("a");
+          link.href = url.href; link.textContent = href; link.target = "_blank"; link.rel = "noopener noreferrer";
+          fragment.append(link);
+          start = match.index + href.length;
+        }
+        if (start) { fragment.append(text.data.slice(start)); text.replaceWith(fragment); }
+      }
+    }
+    const queue = new Set();
+    let pending = false;
+    function scanLinks(node) {
+      const el = node.nodeType === Node.ELEMENT_NODE ? node : node.parentElement;
+      if (!el) return;
+      const message = el.closest(".chat-msg-text");
+      if (message) queue.add(message);
+      else el.querySelectorAll(".chat-msg-text").forEach(item => queue.add(item));
+      if (!queue.size || pending) return;
+      pending = true;
+      requestAnimationFrame(() => {
+        pending = false;
+        queue.forEach(item => { if (item.isConnected) linkChatText(item); });
+        queue.clear();
+      });
+    }
+    scanLinks(document.body);
+    new MutationObserver(records => {
+      for (const record of records) {
+        if (record.type === "characterData") scanLinks(record.target);
+        else record.addedNodes.forEach(scanLinks);
+      }
+    }).observe(document.body, { subtree: true, childList: true, characterData: true });
+  }
+
   const dialog = document.createElement("dialog");
   dialog.className = "projectx-settings";
   dialog.setAttribute("aria-labelledby", "projectx-window-title");

@@ -99,9 +99,18 @@ const consoleIntro = (() => {
         const noise=((i*71+j*109+i*j*7)%97)/97;
         let glyph=Math.floor(noise*chars.length), color;
         const lid=opening*.60*(1-.59*u*u);
+        const upper=-(v+.035*u*u)-lid;
+        const lashBase=u-upper*(.50+.19*u);
+        const lashIndex=Math.round((lashBase+.78)*19);
+        const lashRoot=lashIndex/19-.78;
+        const lashLength=(.09+.10*Math.cos(lashRoot*1.8))*(.76+.24*Math.sin(lashIndex*8.3));
+        const lashCurve=lashRoot+upper*(.50+.19*lashRoot)+upper*upper*1.9;
+        const lash=opening>.2&&lashIndex>=0&&lashIndex<30&&upper>=0&&upper<lashLength
+          &&Math.abs(u-lashCurve)<.012*(1-.65*upper/lashLength);
         if (Math.abs(v+.035*u*u)>lid) {
           const ridge=Math.cos((v+u*u*.09)*42);
           color=Math.abs(v)-lid<.04 ? 0 : Math.min(3,Math.floor(1.4+ridge*.85+noise*.8));
+          if (lash) { color=10; glyph=10+Math.floor(noise*3); }
         } else if (r>.48) {
           color=noise>.4 ? 5 : 4;
         } else if (r>.22) {
