@@ -1143,7 +1143,26 @@ class TGBot:
         """
         kwargs = {}
         if keyboard is not None:
-            kwargs["reply_markup"] = keyboard
+            rows = []
+            chat_links = []
+            for row in keyboard.keyboard:
+                retained = []
+                for button in row:
+                    url = getattr(button, "url", None)
+                    if url and re.fullmatch(r"https://funpay\.com/chat/\?node=[0-9]+", url):
+                        if url not in chat_links:
+                            chat_links.append(url)
+                    else:
+                        retained.append(button)
+                if retained:
+                    rows.append(retained)
+            if chat_links:
+                links = " · ".join(f'<a href="{url}">чат</a>' for url in chat_links)
+                text = f"{text}\n\n{links}" if text else links
+                if not photo:
+                    kwargs["disable_web_page_preview"] = True
+            if rows:
+                kwargs["reply_markup"] = K(keyboard=rows) if chat_links else keyboard
         to_delete = []
         for chat_id in self.notification_settings:
             if notification_type != utils.NotificationTypes.important_announcement and \
