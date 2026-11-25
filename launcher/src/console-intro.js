@@ -135,7 +135,7 @@ const consoleIntro = (() => {
         const u=x/zoom, v=y/zoom;
         const r=Math.hypot(u,v);
         const noise=((i*71+j*109+i*j*7)%97)/97;
-        let glyph=Math.floor(noise*chars.length), color;
+        let glyph=Math.floor(noise*chars.length), color, backgroundLetter=false;
         const lid=opening*.60*(1-.59*u*u);
         if (Math.abs(v+.035*u*u)>lid) {
           const ridge=Math.cos((v+u*u*.09)*42);
@@ -162,15 +162,19 @@ const consoleIntro = (() => {
             color=11; glyph=5;
           } else { color=10; glyph=0; }
           if (wordGrid && wordGrid[(j * cols + i) * 4 + 3] > 100) {
-            color = 11;
-            glyph = 6 + Math.floor(noise * 3);
+            color = colors.length;
+            glyph = 8 + Math.floor(noise * 3);
+            backgroundLetter = true;
           }
           const ax=Math.abs(x)/letterSize, ay=Math.abs(y)/letterSize;
           if (t>.38 && ay<=1 && Math.abs(ax-.78*ay)<.15) {
             color=colors.length; glyph=8+Math.floor(noise*4);
+            backgroundLetter = false;
           }
         }
+        if (backgroundLetter) ctx.globalAlpha = .56;
         ctx.drawImage(atlas,glyph*tile,color*tile,tile,tile,i*dx,j*dy,dx,dy);
+        if (backgroundLetter) ctx.globalAlpha = 1;
       }
     }
   }
