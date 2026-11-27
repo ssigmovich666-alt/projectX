@@ -1,0 +1,30 @@
+diff --git a/FunPayCardinal-main/plugins/review_report_tickets.py b/FunPayCardinal-main/plugins/review_report_tickets.py
+index 9280bc5..32596e6 100644
+--- a/FunPayCardinal-main/plugins/review_report_tickets.py
++++ b/FunPayCardinal-main/plugins/review_report_tickets.py
+@@ -11,12 +11,12 @@ import re
+ import requests
+ from bs4 import BeautifulSoup
+ 
+-from FunPayAPI.common.enums import MessageTypes
++from FunPayAPI.common.enums import MessageTypes, OrderStatuses
+ from FunPayAPI.updater.events import LastChatMessageChangedEvent
+ 
+ 
+ NAME = "Авторепорт отзывов 1-3★"
+-VERSION = "1.0.0"
++VERSION = "1.0.1"
+ DESCRIPTION = "Создаёт тикет в поддержку FunPay «некорректный отзыв» на каждый отзыв с оценкой 1-3 звезды."
+ CREDITS = "Claude"
+ SETTINGS_PAGE = False
+@@ -155,7 +155,9 @@ def check_review(cardinal, obj):
+     except Exception:
+         logger.warning("Не удалось получить заказ для проверки отзыва.")
+         return
+-    if order is None or not order.review or not order.review.stars:
++    if order is None or order.status in (OrderStatuses.REFUNDED, OrderStatuses.PARTIALLY_REFUNDED):
++        return
++    if not order.review or not order.review.stars:
+         return
+     if order.seller_id != cardinal.account.id or order.review.stars > MAX_STARS:
+         return
